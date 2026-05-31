@@ -37,3 +37,13 @@ models/.models-downloaded
 !models/piper-fa/**/*.onnx
 !models/mana-piper/*.onnx
 !models/pertts/**/*.onnx
+
+# Temporary / generated
+tmp.png
+tmp/
+
+# opencode skill data (not part of the project)
+.opencode/
+
+# Documentation
+AGENTS.md
