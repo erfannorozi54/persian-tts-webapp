@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+.venv/
+.venv-tts/
+
+# Build output
+.next/
+out/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Downloaded model files (can be re-downloaded via scripts/download-models.py)
+models/*/
+models/.models-downloaded
+
+# Keep piper voice ONNX files (smaller than other models)
+!models/piper-fa/**/*.onnx
+!models/mana-piper/*.onnx
+!models/pertts/**/*.onnx
