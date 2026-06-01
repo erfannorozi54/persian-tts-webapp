@@ -5,7 +5,7 @@ import fs from "fs";
 
 export async function GET() {
   const modelsWithStatus = MODELS.map((model) => {
-    const localPath = path.join(process.cwd(), model.localDir);
+    const localPath = path.join(/* turbopackIgnore: true */ process.cwd(), model.localDir);
     const downloaded = fs.existsSync(localPath) && fs.readdirSync(localPath).length > 0;
 
     return {

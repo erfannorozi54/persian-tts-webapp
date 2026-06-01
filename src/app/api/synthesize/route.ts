@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid modelId" }, { status: 400 });
     }
 
-    const localPath = path.join(process.cwd(), model.localDir);
+    const localPath = path.join(/* turbopackIgnore: true */ process.cwd(), model.localDir);
     if (!fs.existsSync(localPath)) {
       return NextResponse.json(
         { error: `Model not downloaded. Run setup script first.` },
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const ttsScript = path.join(process.cwd(), "src/lib/tts.py");
+    const ttsScript = path.join(/* turbopackIgnore: true */ process.cwd(), "src/lib/tts.py");
 
     const payload = JSON.stringify({
       modelId,
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       device: "auto",
     });
 
-    const venvPython = path.join(process.cwd(), ".venv/bin/python3");
+    const venvPython = path.join(/* turbopackIgnore: true */ process.cwd(), ".venv/bin/python3");
     const python = fs.existsSync(venvPython) ? venvPython : process.env.PYTHON_BIN || "python3";
 
     const { stdout, stderr } = await runPython(ttsScript, python, payload);
