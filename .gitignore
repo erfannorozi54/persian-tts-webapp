@@ -6,6 +6,10 @@ node_modules/
 # Build output
 .next/
 out/
+tsconfig.tsbuildinfo
+
+# Next.js auto-generated
+next-env.d.ts
 
 # Environment
 .env
