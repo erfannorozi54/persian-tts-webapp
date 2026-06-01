@@ -308,6 +308,15 @@ NEW_MODEL_FILES = [
             "phoneme_cache.zip",
         ],
     },
+    {
+        "id": "chatterbox-persian",
+        "name": "Chatterbox Persian (Thomcles)",
+        "hf_id": "Thomcles/Chatterbox-TTS-Persian-Farsi",
+        "local_dir": "chatterbox-persian",
+        "files": [
+            "t3_fa.safetensors",
+        ],
+    },
 ]
 
 

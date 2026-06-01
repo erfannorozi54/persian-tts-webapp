@@ -223,6 +223,37 @@ def synthesize_kamtera_vits(payload: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Chatterbox Multilingual + Persian Fine-tune (Thomcles/Chatterbox-TTS-Persian-Farsi)
+# Called via .venv-chatterbox subprocess to avoid dependency conflicts.
+# ---------------------------------------------------------------------------
+def synthesize_chatterbox_persian(payload: dict) -> dict:
+    wrapper = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chatterbox_wrapper.py")
+    chatterbox_venv_python = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        ".venv-chatterbox", "bin", "python3",
+    )
+    if not os.path.isfile(chatterbox_venv_python):
+        return {"error": f"Chatterbox venv not found at {chatterbox_venv_python}. Create with: python3.11 -m venv .venv-chatterbox && .venv-chatterbox/bin/pip install chatterbox-tts"}
+
+    import subprocess as _sp, json as _json
+
+    proc = _sp.run(
+        [chatterbox_venv_python, wrapper],
+        input=_json.dumps(payload),
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
+    if proc.returncode != 0 or not proc.stdout.strip():
+        err = proc.stderr.strip() or f"Process exited with code {proc.returncode}"
+        return {"error": f"Chatterbox inference failed: {err}"}
+    try:
+        return _json.loads(proc.stdout)
+    except _json.JSONDecodeError:
+        return {"error": f"Invalid JSON from Chatterbox wrapper: {proc.stdout[:200]}"}
+
+
+# ---------------------------------------------------------------------------
 # Main entrypoint
 # ---------------------------------------------------------------------------
 HANDLERS = {
@@ -237,6 +268,7 @@ HANDLERS = {
     "ims-toucan": synthesize_toucantts,
     "kamtera-male-vits": synthesize_kamtera_vits,
     "kamtera-female-vits": synthesize_kamtera_vits,
+    "chatterbox-persian": synthesize_chatterbox_persian,
 }
 
 

@@ -62,6 +62,25 @@ snapshot_download(
 "
 echo "[OK] S2 Pro checkpoint downloaded"
 
+# Step 5: Chatterbox TTS venv (separate venv to avoid torch/transformers version conflicts)
+CHATTERBOX_VENV="$SCRIPT_DIR/.venv-chatterbox"
+if [ -d "$CHATTERBOX_VENV" ]; then
+    echo "[OK] Chatterbox venv exists at $CHATTERBOX_VENV"
+else
+    echo "[5/5] Creating Chatterbox venv (Python 3.11)..."
+    if command -v python3.11 &> /dev/null; then
+        python3.11 -m venv "$CHATTERBOX_VENV"
+    else
+        echo "[WARN] python3.11 not found, trying python3..."
+        python3 -m venv "$CHATTERBOX_VENV"
+    fi
+    echo "[OK] Chatterbox venv created"
+fi
+
+echo "  Installing chatterbox-tts and dependencies..."
+"$CHATTERBOX_VENV/bin/pip" install --upgrade pip
+"$CHATTERBOX_VENV/bin/pip" install chatterbox-tts
+
 echo ""
 echo "=== Setup Complete ==="
 echo "Run 'npm run dev' to start the development server."

@@ -111,6 +111,16 @@ export const MODELS: TTSModel[] = [
     capabilities: ["persian-optimized", "vits", "female-voice", "high-quality"],
     localDir: "models/kamtera-female-vits",
   },
+  {
+    id: "chatterbox-persian",
+    name: "Chatterbox Persian (Fine-tuned)",
+    description: "State-of-the-art Persian TTS based on Chatterbox Multilingual (500M params). Zero-shot voice cloning, emotion exaggeration control, and classifier-free guidance. Persian fine-tune trained on cleaned denoised data. Best quality open-source Persian TTS available.",
+    huggingfaceId: "Thomcles/Chatterbox-TTS-Persian-Farsi",
+    vramRequired: 4,
+    languages: ["fa"],
+    capabilities: ["persian-optimized", "voice-cloning", "zero-shot", "high-quality", "emotion-control"],
+    localDir: "models/chatterbox-persian",
+  },
 ];
 
 export function getModelById(id: string): TTSModel | undefined {
