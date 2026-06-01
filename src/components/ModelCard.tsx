@@ -46,16 +46,43 @@ export default function ModelCard({
         {model.description}
       </span>
 
-      {/* Capabilities */}
+      {/* Capability badges */}
       <div className="mt-3 flex flex-wrap gap-1">
-        {model.capabilities.slice(0, 3).map((cap) => (
-          <span
-            key={cap}
-            className="px-1.5 py-0.5 text-[10px] bg-slate-800 text-slate-400 rounded"
-          >
-            {cap}
+        {model.capabilities.includes("voice-cloning") && (
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] bg-amber-900/30 text-amber-400 border border-amber-800/50 rounded">
+            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+            Clone
           </span>
-        ))}
+        )}
+        {model.capabilities.includes("emotion-control") && (
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] bg-pink-900/30 text-pink-400 border border-pink-800/50 rounded">
+            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+            </svg>
+            Emotion
+          </span>
+        )}
+        {model.capabilities.includes("speed-control") && (
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] bg-cyan-900/30 text-cyan-400 border border-cyan-800/50 rounded">
+            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+            </svg>
+            Speed
+          </span>
+        )}
+        {model.capabilities.slice(0, 3).map((cap) => {
+          if (["voice-cloning", "emotion-control", "speed-control"].includes(cap)) return null;
+          return (
+            <span
+              key={cap}
+              className="px-1.5 py-0.5 text-[10px] bg-slate-800 text-slate-400 rounded"
+            >
+              {cap}
+            </span>
+          );
+        })}
         {model.capabilities.length > 3 && (
           <span className="px-1.5 py-0.5 text-[10px] bg-slate-800 text-slate-400 rounded">
             +{model.capabilities.length - 3}

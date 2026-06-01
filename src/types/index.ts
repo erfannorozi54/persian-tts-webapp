@@ -13,6 +13,10 @@ export interface SynthesizeRequest {
   text: string;
   modelId: string;
   refAudio?: string;
+  refText?: string;
+  exaggeration?: number;
+  cfgWeight?: number;
+  speed?: number;
 }
 
 export interface SynthesizeResponse {

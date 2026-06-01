@@ -76,6 +76,10 @@ def synthesize_mms_tts_fas(payload: dict) -> dict:
 # k2-fsa/OmniVoice
 # ---------------------------------------------------------------------------
 def synthesize_omnivoice(payload: dict) -> dict:
+    import io as _io
+    import wave as _wave
+    import tempfile as _tempfile
+
     device = select_device(payload.get("device", "auto"))
 
     from omnivoice import OmniVoice
@@ -87,9 +91,45 @@ def synthesize_omnivoice(payload: dict) -> dict:
         dtype=torch.float16 if device == "cuda" else torch.float32,
     )
 
-    audios = model.generate(
-        text=payload["text"],
-    )
+    gen_kwargs = {"text": payload["text"]}
+
+    ref_audio_b64 = payload.get("refAudio")
+    ref_text = payload.get("refText")
+    tmp_files = []
+
+    if ref_audio_b64:
+        raw = base64.b64decode(ref_audio_b64)
+        with _wave.open(_io.BytesIO(raw), "rb") as wf:
+            nframes = wf.getnframes()
+            sr = wf.getframerate()
+            if nframes / sr < 10.0:
+                return {"error": "Reference audio must be at least 10 seconds"}
+            pcm = wf.readframes(nframes)
+        audio_arr = np.frombuffer(pcm, dtype=np.int16).astype(np.float32) / 32767.0
+        fd, tmp_path = _tempfile.mkstemp(suffix=".wav")
+        os.close(fd)
+        tmp_files.append(tmp_path)
+        with _wave.open(tmp_path, "wb") as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(sr)
+            wf.writeframes((audio_arr * 32767).astype(np.int16).tobytes())
+        gen_kwargs["ref_audio"] = tmp_path
+        if ref_text:
+            gen_kwargs["ref_text"] = ref_text
+
+    speed = payload.get("speed")
+    if speed is not None:
+        gen_kwargs["speed"] = max(0.5, min(2.0, float(speed)))
+
+    try:
+        audios = model.generate(**gen_kwargs)
+    finally:
+        for p in tmp_files:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
 
     audio_np = audios[0].astype(np.float32)
     b64, dur = encode_wav_base64(audio_np, 24000)

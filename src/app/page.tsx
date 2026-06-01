@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import TextEditor from "@/components/TextEditor";
 import ModelCard from "@/components/ModelCard";
 import AudioPlayer from "@/components/AudioPlayer";
+import VoiceClonePanel from "@/components/VoiceClonePanel";
+import EmotionControl from "@/components/EmotionControl";
 import { TTSModel, SynthesizeResponse } from "@/types";
 
 interface ModelWithStatus extends TTSModel {
@@ -17,6 +19,18 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Record<string, SynthesizeResponse>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [refAudio, setRefAudio] = useState("");
+  const [refText, setRefText] = useState("");
+  const [exaggeration, setExaggeration] = useState(0.5);
+  const [cfgWeight, setCfgWeight] = useState(0.5);
+  const [speed, setSpeed] = useState(1.0);
+
+  const selectedModelData = models.find((m) => m.id === selectedModel);
+  const hasVoiceCloning = selectedModelData?.capabilities.includes("voice-cloning") ?? false;
+  const hasEmotionControl = selectedModelData?.capabilities.includes("emotion-control") ?? false;
+  const hasSpeedControl = selectedModelData?.capabilities.includes("speed-control") ?? false;
+
+  const STORAGE_PREFIX = "tts_ref_audio_";
 
   useEffect(() => {
     fetch("/api/models")
@@ -25,7 +39,33 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(STORAGE_PREFIX + selectedModel);
+      if (stored) {
+        const data = JSON.parse(stored);
+        if (data.refAudio) {
+          setRefAudio(data.refAudio);
+          setRefText(data.refText || "");
+        }
+      }
+    } catch {
+    }
+  }, [selectedModel]);
+
   const handleModelSelect = (id: string) => {
+    const nextModel = models.find((m) => m.id === id);
+    if (!nextModel?.capabilities.includes("voice-cloning")) {
+      setRefAudio("");
+      setRefText("");
+    }
+    if (!nextModel?.capabilities.includes("emotion-control")) {
+      setExaggeration(0.5);
+      setCfgWeight(0.5);
+    }
+    if (!nextModel?.capabilities.includes("speed-control")) {
+      setSpeed(1.0);
+    }
     setSelectedModel(id);
   };
 
@@ -37,10 +77,17 @@ export default function Home() {
   const synthesize = useCallback(async () => {
     setLoading(true);
     try {
+      const body: Record<string, unknown> = { text, modelId: selectedModel };
+      if (refAudio) body.refAudio = refAudio;
+      if (refText) body.refText = refText;
+      if (exaggeration !== 0.5) body.exaggeration = exaggeration;
+      if (cfgWeight !== 0.5) body.cfgWeight = cfgWeight;
+      if (speed !== 1.0) body.speed = speed;
+
       const res = await fetch("/api/synthesize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, modelId: selectedModel }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (data.audioBase64) {
@@ -61,7 +108,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [text, selectedModel]);
+  }, [text, selectedModel, refAudio, refText, exaggeration, cfgWeight, speed]);
 
   return (
     <motion.main
@@ -91,6 +138,29 @@ export default function Home() {
       <div className="grid gap-6 lg:grid-cols-[1fr,280px]">
         <section className="space-y-6">
           <TextEditor value={text} onChange={setText} />
+
+          {hasVoiceCloning && (
+            <VoiceClonePanel
+              key={selectedModel}
+              refAudio={refAudio}
+              refText={refText}
+              onChangeRefAudio={setRefAudio}
+              onChangeRefText={setRefText}
+              modelId={selectedModel}
+            />
+          )}
+
+          <EmotionControl
+            exaggeration={exaggeration}
+            cfgWeight={cfgWeight}
+            speed={speed}
+            onChangeExaggeration={setExaggeration}
+            onChangeCfgWeight={setCfgWeight}
+            onChangeSpeed={setSpeed}
+            hasEmotionControl={hasEmotionControl}
+            hasSpeedControl={hasSpeedControl}
+          />
+
           <button
             type="button"
             className="btn-primary"

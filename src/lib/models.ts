@@ -18,7 +18,7 @@ export const MODELS: TTSModel[] = [
     huggingfaceId: "k2-fsa/OmniVoice",
     vramRequired: 4,
     languages: ["fa", "en", "ar", "zh", "ja", "ko", "es", "fr", "de", "ru", "pt", "it", "hi", "tr"],
-    capabilities: ["voice-cloning", "voice-design", "600-languages", "zero-shot", "emotion-tags"],
+    capabilities: ["voice-cloning", "voice-design", "600-languages", "zero-shot", "emotion-tags", "speed-control"],
     localDir: "models/omnivoice",
   },
   {
