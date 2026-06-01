@@ -29,6 +29,11 @@ export default function Home() {
     setSelectedModel(id);
   };
 
+  const handleLogout = useCallback(async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.href = "/login";
+  }, []);
+
   const synthesize = useCallback(async () => {
     setLoading(true);
     try {
@@ -65,13 +70,22 @@ export default function Home() {
       transition={{ duration: 0.4 }}
       className="flex-1 max-w-5xl mx-auto px-6 py-12 w-full"
     >
-      <header className="mb-10">
-        <h1 className="text-2xl font-bold font-mono text-slate-100">
-          Persian TTS
-        </h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Select a model, write your text, and synthesize speech.
-        </p>
+      <header className="mb-10 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold font-mono text-slate-100">
+            Persian TTS
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">
+            Select a model, write your text, and synthesize speech.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="text-xs font-mono text-slate-400 hover:text-slate-100 border border-slate-700 hover:border-slate-500 rounded-md px-3 py-1.5 transition-colors duration-200 cursor-pointer"
+        >
+          Logout
+        </button>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[1fr,280px]">
