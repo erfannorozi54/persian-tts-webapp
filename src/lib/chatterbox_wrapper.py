@@ -6,14 +6,11 @@ import numpy as np
 venv_bin = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "..", ".venv-chatterbox", "bin")
 os.environ['PATH'] = venv_bin + ':' + os.environ.get('PATH', '')
 
-if not os.environ.get("http_proxy"):
-    os.environ["http_proxy"] = "http://127.0.0.1:10809"
-if not os.environ.get("https_proxy"):
-    os.environ["https_proxy"] = "http://127.0.0.1:10809"
-if not os.environ.get("HTTP_PROXY"):
-    os.environ["HTTP_PROXY"] = "http://127.0.0.1:10809"
-if not os.environ.get("HTTPS_PROXY"):
-    os.environ["HTTPS_PROXY"] = "http://127.0.0.1:10809"
+os.environ["http_proxy"] = "http://127.0.0.1:10809"
+os.environ["https_proxy"] = "http://127.0.0.1:10809"
+os.environ["HTTP_PROXY"] = "http://127.0.0.1:10809"
+os.environ["HTTPS_PROXY"] = "http://127.0.0.1:10809"
+os.environ.pop("ALL_PROXY", None)  # remove any SOCKS5 proxy that conflicts
 
 
 def encode_wav_base64(audio_np: np.ndarray, sample_rate: int) -> tuple[str, float]:
