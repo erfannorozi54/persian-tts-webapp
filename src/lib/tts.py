@@ -285,7 +285,15 @@ def synthesize_chatterbox_persian(payload: dict) -> dict:
         timeout=300,
     )
     if proc.returncode != 0 or not proc.stdout.strip():
-        err = proc.stderr.strip() or f"Process exited with code {proc.returncode}"
+        err = proc.stderr.strip()
+        if not err and proc.stdout.strip():
+            try:
+                err_data = _json.loads(proc.stdout)
+                err = err_data.get("error", "")
+            except _json.JSONDecodeError:
+                err = proc.stdout.strip()[:200]
+        if not err:
+            err = f"Process exited with code {proc.returncode}"
         return {"error": f"Chatterbox inference failed: {err}"}
     try:
         return _json.loads(proc.stdout)
