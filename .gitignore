@@ -2,6 +2,7 @@
 node_modules/
 .venv/
 .venv-tts/
+.venv-chatterbox/
 
 # Build output
 .next/
@@ -41,6 +42,10 @@ models/.models-downloaded
 !models/piper-fa/**/*.onnx
 !models/mana-piper/*.onnx
 !models/pertts/**/*.onnx
+
+# Cloned repos with their own source files (not part of our app)
+fish-speech-repo/
+moss-tts-repo/
 
 # Temporary / generated
 tmp.png
