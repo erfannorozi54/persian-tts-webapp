@@ -62,12 +62,31 @@ snapshot_download(
 "
 echo "[OK] S2 Pro checkpoint downloaded"
 
-# Step 5: Chatterbox TTS venv (separate venv to avoid torch/transformers version conflicts)
+# Step 5: Coqui TTS venv for Kamtera VITS models (Python 3.10)
+VITS_VENV="$SCRIPT_DIR/.venv-tts"
+if [ -d "$VITS_VENV" ]; then
+    echo "[OK] VITS venv exists at $VITS_VENV"
+else
+    echo "[5/6] Creating VITS venv (Python 3.10)..."
+    if command -v python3.10 &> /dev/null; then
+        python3.10 -m venv "$VITS_VENV"
+    else
+        echo "[WARN] python3.10 not found, trying python3..."
+        python3 -m venv "$VITS_VENV"
+    fi
+    echo "[OK] VITS venv created"
+fi
+
+echo "  Installing Coqui TTS and dependencies..."
+"$VITS_VENV/bin/pip" install --upgrade pip
+"$VITS_VENV/bin/pip" install TTS==0.22.0
+
+# Step 6: Chatterbox TTS venv (separate venv to avoid torch/transformers version conflicts)
 CHATTERBOX_VENV="$SCRIPT_DIR/.venv-chatterbox"
 if [ -d "$CHATTERBOX_VENV" ]; then
     echo "[OK] Chatterbox venv exists at $CHATTERBOX_VENV"
 else
-    echo "[5/5] Creating Chatterbox venv (Python 3.11)..."
+    echo "[6/6] Creating Chatterbox venv (Python 3.11)..."
     if command -v python3.11 &> /dev/null; then
         python3.11 -m venv "$CHATTERBOX_VENV"
     else
